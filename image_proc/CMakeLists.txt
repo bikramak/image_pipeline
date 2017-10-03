@@ -1,10 +1,17 @@
 cmake_minimum_required(VERSION 2.8)
 project(image_proc)
 
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED 
+  cv_bridge
+  dynamic_reconfigure
+  image_geometry
+  image_transport
+  nodelet
+  nodelet_topic_tools
+  roscpp
+  sensor_msgs)
 
-find_package(catkin REQUIRED cv_bridge dynamic_reconfigure image_geometry image_transport nodelet nodelet_topic_tools roscpp sensor_msgs)
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 2 REQUIRED)
 find_package(Boost REQUIRED COMPONENTS thread)
 
 if(cv_bridge_VERSION VERSION_GREATER "1.12.0")
@@ -12,11 +19,16 @@ if(cv_bridge_VERSION VERSION_GREATER "1.12.0")
 endif()
 
 # Dynamic reconfigure support
-generate_dynamic_reconfigure_options(cfg/CropDecimate.cfg cfg/Debayer.cfg cfg/Rectify.cfg cfg/Resize.cfg)
+generate_dynamic_reconfigure_options(
+  cfg/CropDecimate.cfg
+  cfg/Debayer.cfg
+  cfg/Rectify.cfg
+  cfg/Resize.cfg)
 
-catkin_package(
-  CATKIN_DEPENDS image_geometry roscpp sensor_msgs
-  DEPENDS OpenCV
+catkin_package(CATKIN_DEPENDS
+  image_geometry
+  roscpp
+  sensor_msgs
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
 )
@@ -50,6 +62,7 @@ install(FILES nodelet_plugins.xml
 add_executable(image_proc_exe src/nodes/image_proc.cpp)
 target_link_libraries(image_proc_exe ${PROJECT_NAME}  ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
 SET_TARGET_PROPERTIES(image_proc_exe PROPERTIES OUTPUT_NAME image_proc)
+
 install(TARGETS image_proc_exe
         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
